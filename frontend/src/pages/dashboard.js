@@ -9,10 +9,45 @@ export async function renderDashboard(container) {
         <p class="page-subtitle">Real-time status of the Order Processing Engine & Dependencies</p>
       </div>
       <div>
-        <button id="btn-quick-order" class="btn btn-primary">
-          + Create Sample Order
+        <button id="btn-toggle-manual-order" class="btn btn-primary">
+          + Buat Pesanan Manual
         </button>
       </div>
+    </div>
+
+    <!-- Form Input Manual (Tersembunyi by default) -->
+    <div id="manual-order-card" class="card" style="display: none; margin-bottom: 2rem; border-color: var(--border-glow);">
+      <h3 style="margin-bottom: 1.25rem;">Buat Pesanan Baru (Manual)</h3>
+      <form id="manual-order-form">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Nama Pelanggan</label>
+            <input type="text" id="manual-customer-name" class="form-control" placeholder="Contoh: Akmal" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Pelanggan</label>
+            <input type="email" id="manual-customer-email" class="form-control" placeholder="Contoh: akmal@example.com" required />
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div class="form-group">
+            <label class="form-label">Nama Barang</label>
+            <input type="text" id="manual-item-name" class="form-control" placeholder="Contoh: Server" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Harga (Rp)</label>
+            <input type="number" id="manual-item-price" class="form-control" placeholder="100000" min="1" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jumlah</label>
+            <input type="number" id="manual-item-qty" class="form-control" placeholder="1" min="1" required />
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+          <button type="button" id="btn-cancel-manual" class="btn btn-outline">Batal</button>
+          <button type="submit" class="btn btn-primary">Kirim Pesanan</button>
+        </div>
+      </form>
     </div>
 
     <!-- Telemetry Cards -->
@@ -76,32 +111,50 @@ export async function renderDashboard(container) {
     </div>
   `;
 
-  // Attach quick sample order button
-  const quickOrderBtn = document.getElementById('btn-quick-order');
-  quickOrderBtn?.addEventListener('click', async () => {
-    quickOrderBtn.disabled = true;
-    quickOrderBtn.textContent = 'Submitting...';
+  // Logika Tampilkan/Sembunyikan Form
+  const toggleBtn = document.getElementById('btn-toggle-manual-order');
+  const formCard = document.getElementById('manual-order-card');
+  const cancelBtn = document.getElementById('btn-cancel-manual');
+  const manualForm = document.getElementById('manual-order-form');
+
+  toggleBtn?.addEventListener('click', () => {
+    formCard.style.display = formCard.style.display === 'none' ? 'block' : 'none';
+  });
+
+  cancelBtn?.addEventListener('click', () => {
+    formCard.style.display = 'none';
+  });
+
+  // Logika Submit Form Manual
+  manualForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      customer_name: document.getElementById('manual-customer-name').value,
+      customer_email: document.getElementById('manual-customer-email').value,
+      items: [{
+        sku: 'MANUAL-001',
+        name: document.getElementById('manual-item-name').value,
+        price: Number(document.getElementById('manual-item-price').value),
+        quantity: Number(document.getElementById('manual-item-qty').value)
+      }]
+    };
+
     try {
-      const sampleNames = ['Alice Johnson', 'Bob Smith', 'Charlie DevOps', 'Daniella Vance'];
-      const randomName = sampleNames[Math.floor(Math.random() * sampleNames.length)];
-      const sampleEmail = `${randomName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
 
-      await api.createOrder({
-        customer_name: randomName,
-        customer_email: sampleEmail,
-        items: [
-          { sku: 'CLOUD-SRV-01', name: 'Virtual Compute Node', price: 150000, quantity: 2 },
-          { sku: 'LB-PREM-02', name: 'Managed Load Balancer', price: 50000, quantity: 1 }
-        ]
-      });
+      await api.createOrder(payload);
+      showToast('Pesanan manual berhasil dikirim ke Queue!', 'success');
 
-      showToast(`Sample order created for ${randomName}!`, 'success');
+      manualForm.reset();
+      formCard.style.display = 'none';
       loadDashboardData();
     } catch (err) {
-      showToast(`Failed to create order: ${err.message}`, 'error');
+      showToast(`Gagal membuat pesanan: ${err.message}`, 'error');
     } finally {
-      quickOrderBtn.disabled = false;
-      quickOrderBtn.textContent = '+ Create Sample Order';
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 
@@ -133,7 +186,7 @@ async function loadDashboardData() {
     const tbody = document.getElementById('recent-orders-tbody');
     if (tbody) {
       if (orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No orders recorded yet. Click "+ Create Sample Order" above.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No orders recorded yet. Click "+ Buat Pesanan Manual" above.</td></tr>`;
       } else {
         tbody.innerHTML = orders
           .slice(0, 5)
