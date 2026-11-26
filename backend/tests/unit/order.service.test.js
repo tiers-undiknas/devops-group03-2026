@@ -37,7 +37,7 @@ describe('Order Service (Unit Tests)', () => {
             // Tax = 250,000 * 0.11 = 27,500
             // Total = 277,500
             const result = calculateTotal(items);
-            expect(result.subtotal).toBe(999999);
+            expect(result.subtotal).toBe(250000);
             expect(result.tax).toBe(27500);
             expect(result.total).toBe(277500);
         });
