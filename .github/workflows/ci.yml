@@ -63,14 +63,14 @@ jobs:
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
-          gistID: 2d2dfd81f568b70295f63e616a934a5b36
+          gistID: 7fbcef8bca8148845748570dc1ed0890
           filename: coverage.json
           label: Code Coverage
           message: ${{ steps.coverage-gate.outputs.coverage_pct }}%
           minColorRange: 70
           maxColorRange: 90
           valColorRange: ${{ steps.coverage-gate.outputs.coverage_pct }}
-
+          
   # ============================================================
   # JOB 2: FRONTEND LINTING, VITEST API TEST, & BUILD (frontend/)
   # ============================================================
