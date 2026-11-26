@@ -1,9 +1,14 @@
 # Order Processing Engine (DevOps Seed Project)
-
 [![Node.js](https://img.shields.io/badge/Node.js-v24_LTS-green.svg)](https://nodejs.org/)
 [![Architecture](https://img.shields.io/badge/Architecture-Multi--Tier_%26_Multi--Process-blue.svg)](#architecture)
 [![Coverage](https://img.shields.io/badge/Coverage-≥75%25-brightgreen.svg)](#testing--code-coverage)
 [![Observability](https://img.shields.io/badge/Observability-Prometheus_%2B_Pino-orange.svg)](#observability--metrics)
+
+<!-- ========================================== -->
+<!-- BADGE TAMBAHAN DARI TUGAS YOSUA (LAB 3 & 4) -->
+<!-- ========================================== -->
+[![CI Pipeline Status](https://github.com/tiers-undiknas/devops-group03-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/tiers-undiknas/devops-group03-2026/actions/workflows/ci.yml)
+[![Code Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yosuatheo10-svg/2dfd81f568b70295f63e616a934a5b36/raw/coverage.json)](https://github.com/tiers-undiknas/devops-group03-2026/actions/workflows/ci.yml)
 
 **Order Processing Engine** adalah aplikasi acuan (_Seed Project_) berstandar _production-grade_ untuk praktikum mata kuliah DevOps (Semester 5). Aplikasi ini dirancang sebagai target nyata untuk rekayasa infrastruktur, kontainerisasi, automasi CI/CD, DevSecOps, Infrastructure as Code (IaC), dan Observabilitas modern.
 
@@ -43,6 +48,23 @@ Aplikasi ini menggunakan arsitektur **Multi-Tier & Multi-Process** dengan pemisa
 ```
 
 ### Komponen & Multi-Process Model
+
+1. **Frontend Tier (`frontend/`)**:
+   - Single Page Application (SPA) berbasis Vanilla JavaScript dan Vite.
+   - Menyediakan dashboard operasional, formulir transaksi pemesanan, inspeksi _audit trail_ event, serta _Chaos & SRE Console_.
+   - Port default: `5173` (dilengkapi _reverse-proxy_ ke backend).
+
+2. **Backend API Server (`backend/src/server.js`)**:
+   - Proses HTTP berbasis Node.js LTS v24 dan Express.
+   - Menangani validasi payload (Joi), _idempotent database transactions_, structured JSON logging dengan `x-request-id` (`pino` & `pino-http`), serta mengekspor metrik Prometheus.
+   - Port default: `3000`.
+
+3. **Background Worker (`backend/src/worker.js`)**:
+   - Proses terpisah (_standalone background consumer_) berbasis BullMQ.
+   - Mengambil pekerjaan dari Redis, mengeksekusi pemrosesan pembayaran & validasi inventaris, memperbarui status pesanan, dan mencatat _audit trail_ ke PostgreSQL.
+
+4. **PostgreSQL 16+**:
+   - Menyimpan entitas relasional tabel `orders` dan riwayat status tabel `order_events`.### Komponen & Multi-Process Model
 
 1. **Frontend Tier (`frontend/`)**:
    - Single Page Application (SPA) berbasis Vanilla JavaScript dan Vite.
