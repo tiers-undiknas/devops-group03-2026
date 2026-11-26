@@ -8,7 +8,6 @@
 <!-- BADGE TAMBAHAN DARI TUGAS YOSUA (LAB 3 & 4) -->
 <!-- ========================================== -->
 [![CI Pipeline Status](https://github.com/tiers-undiknas/devops-group03-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/tiers-undiknas/devops-group03-2026/actions/workflows/ci.yml)
-![Code Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/yosuatheo10-svg/7fbcef8bca8148845748570dc1ed0890/raw/coverage.json)
 
 **Order Processing Engine** adalah aplikasi acuan (_Seed Project_) berstandar _production-grade_ untuk praktikum mata kuliah DevOps (Semester 5). Aplikasi ini dirancang sebagai target nyata untuk rekayasa infrastruktur, kontainerisasi, automasi CI/CD, DevSecOps, Infrastructure as Code (IaC), dan Observabilitas modern.
 
