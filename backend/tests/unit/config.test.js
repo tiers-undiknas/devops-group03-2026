@@ -26,5 +26,8 @@ describe('Configuration Layer', () => {
         expect(config.queue.concurrency).toBeGreaterThan(0);
     });
 
-    expect(config.metrics.enabled).toBe(false); // <--- Sengaja diubah agar gagal
+    it('should provide telemetry metrics configurations', () => {
+        expect(config.metrics.enabled).toBe(true);
+        expect(config.metrics.prefix).toBeTypeOf('string');
+    });
 });
